@@ -7,12 +7,206 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="none|textMultiLine"
+        android:text="Scheduled SMS Texts upon opening of app"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stopNumberLabel"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+        android:ems="10"
+        android:focusable="false"
+        android:gravity="center"
+        android:inputType="none|textMultiLine"
+        android:text="Stop \nNumber"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/stopNumberInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/busNumberLabel"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:ems="10"
+        android:focusable="false"
+        android:gravity="center_horizontal"
+        android:inputType="none|textMultiLine"
+        android:text="Bus \nNumber"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/stopNumberInput"
+        app:layout_constraintLeft_toRightOf="@+id/stopNumberLabel"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/beginPeriodLabel"
+        android:layout_width="92dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="2dp"
+        android:ems="10"
+        android:focusable="false"
+        android:gravity="center_horizontal"
+        android:inputType="none|textMultiLine"
+        android:text="Start Time\n(24h clock)"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/stopNumberInput"
+        app:layout_constraintRight_toLeftOf="@+id/endPeriodLabel"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/endPeriodLabel"
+        android:layout_width="92dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="2dp"
+        android:ems="10"
+        android:focusable="false"
+        android:gravity="center_horizontal"
+        android:inputType="none|textMultiLine"
+        android:text="End Time\n(24h clock)"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/stopNumberInput"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <EditText
+        android:id="@+id/stopNumberInput"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="300dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/busNumberInput"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="300dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/stopNumberInput"
+        app:layout_constraintStart_toEndOf="@+id/stopNumberInput"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/beginPeriodInput"
+        android:layout_width="92dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="300dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/endPeriodInput"
+        app:layout_constraintLeft_toRightOf="@+id/busNumberInput"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/endPeriodInput"
+        android:layout_width="92dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="300dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/beginPeriodInput"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/userText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="textMultiLine|textPersonName"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/addButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/busNumberInput" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addButton"
+        android:layout_width="65dp"
+        android:layout_height="166dp"
+        android:layout_marginBottom="50dp"
+        android:layout_marginRight="50dp"
+        android:clickable="true"
+        android:onClick="addButtonClicked"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_add"
+        tools:layout_marginLeft="40dp" />
+
+    <Button
+        android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginBottom="50dp"
+        android:layout_marginLeft="50dp"
+        android:onClick="deleteButtonClicked"
+        android:text="Delete"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/deleteInfo"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        android:ems="10"
+        android:inputType="none|textMultiLine"
+        android:text="Enter stop number and tap delete to remove it from the database"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:onClick="sendSMSClicked"
+        android:text="Text now"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/beginPeriodInput" />
 
 </android.support.constraint.ConstraintLayout>

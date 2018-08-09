@@ -1,56 +1,93 @@
 package io.github.richardyjtian.bustexter;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.SmsManager;
+import android.text.Editable;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int SEND_SMS_CODE = 23; //added
+    EditText stopNumberInput;
+    EditText busNumberInput;
+    EditText beginPeriodInput;
+    EditText endPeriodInput;
+    TextView userText;
+    DBHandler dbHandler;
+
+    //todo: location based text
+    //todo: make it easier to delete an entry
+    //todo: allow bus texts inside the app on click of button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //todo: verify permissions in if statement
+        stopNumberInput = (EditText) findViewById(R.id.stopNumberInput);
+        busNumberInput = (EditText) findViewById(R.id.busNumberInput);
+        beginPeriodInput = (EditText) findViewById(R.id.beginPeriodInput);
+        endPeriodInput = (EditText) findViewById(R.id.endPeriodInput);
+        userText = (TextView) findViewById(R.id.userText);
+        dbHandler = new DBHandler(this, null, null, 1);
+        printDatabase();
+
+
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        if(!SMSSendPermissionGranted())
-            requestSMSSendPermission();
+        if(!SMS.SMSSendPermissionGranted(this))
+            SMS.requestSMSSendPermission(this);
         else{
-            if (hour < 15)
-                sendSMS("33333", "56767 410");
-            else
-                sendSMS("33333", "58624 410");
+            String busStopToText = dbHandler.busStopToText(hour);
+            if(busStopToText != null)
+                SMS.sendSMS("33333", busStopToText);
         }
     }
 
-    private boolean SMSSendPermissionGranted() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;
+    //Add an entry to the database
+    public void addButtonClicked(View view){
+        String stopNumber = stopNumberInput.getText().toString();
+        String busNumber = busNumberInput.getText().toString();
+        String beginPeriod = beginPeriodInput.getText().toString();
+        String endPeriod = endPeriodInput.getText().toString();
+        if(!stopNumber.equals("") && !busNumber.equals("") && !beginPeriod.equals("") && !endPeriod.equals("")
+                && Integer.parseInt(beginPeriod) >= 0 && Integer.parseInt(endPeriod) <= 24 && Integer.parseInt(endPeriod) > Integer.parseInt(beginPeriod)) {
 
-    }
-
-    //Requesting permission
-    private void requestSMSSendPermission() {
-
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
-            //If the user has denied the permission previously your code will come to this block
-            //Here you can explain why you need this permission
-            //Explain here why you need this permission
+            Entry entry = new Entry(stopNumberInput.getText().toString(), busNumberInput.getText().toString(),
+                    beginPeriodInput.getText().toString(), endPeriodInput.getText().toString());
+            dbHandler.addEntry(entry);
         }
-
-        //And finally ask for the permission
-        ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.SEND_SMS }, SEND_SMS_CODE);
+        printDatabase();
     }
 
-    private void sendSMS(String phoneNumber, String message) {
-        SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, message, null, null);
+    //Delete an entry from the database
+    public void deleteButtonClicked(View view){
+        String inputText = stopNumberInput.getText().toString();
+        dbHandler.deleteEntry(inputText);
+        printDatabase();
+    }
+
+    public void sendSMSClicked(View view){
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if(!SMS.SMSSendPermissionGranted(this))
+            SMS.requestSMSSendPermission(this);
+        else{
+            String busStopToText = dbHandler.busStopToText(hour);
+            if(busStopToText != null)
+                SMS.sendSMS("33333", busStopToText);
+        }
+    }
+
+    public void printDatabase(){
+        String dbString = dbHandler.databaseToString();
+        userText.setText(dbString);
+        stopNumberInput.setText("");
+        busNumberInput.setText("");
+        beginPeriodInput.setText("");
+        endPeriodInput.setText("");
+
     }
 }
