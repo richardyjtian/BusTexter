@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class DBHandler extends SQLiteOpenHelper{
 
-    private static final int DATABASE_VERSION = 2; //change version if add other descriptors to entry class
+    private static final int DATABASE_VERSION = 3; //change version if add other descriptors to entry class
     private static final String DATABASE_NAME = "entries.db";
     private static final String TABLE_ENTRIES = "entries";
     private static final String COLUMN_ID = "_id";
@@ -31,10 +31,10 @@ public class DBHandler extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE " + TABLE_ENTRIES + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + ", " +
-                COLUMN_STOPNUMBER + " TEXT" + ", " +
-                COLUMN_BUSNUMBER + " TEXT" + ", " +
-                COLUMN_BEGINPERIOD + " TEXT" + ", " +
-                COLUMN_ENDPERIOD + " TEXT" + ", " +
+                COLUMN_STOPNUMBER + " INTEGER" + ", " +
+                COLUMN_BUSNUMBER + " INTEGER" + ", " +
+                COLUMN_BEGINPERIOD + " INTEGER" + ", " +
+                COLUMN_ENDPERIOD + " INTEGER" + ", " +
                 COLUMN_BUSNAME + " TEXT" +
                 ");";
         db.execSQL(query);
@@ -61,39 +61,40 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //Delete an entry from the database
-    public void deleteEntry(String stopNumber){
+    public void deleteEntry(int stopNumber){
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_ENTRIES + " WHERE " + COLUMN_STOPNUMBER + "=\"" + stopNumber + "\";");
     }
 
     //Print out the database as a string
-    public String databaseToString() {
-        String dbString = "";
-        SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1";
-
-        //Cursor point to a location in your results
-        Cursor c = db.rawQuery(query, null);
-        //Move to the first row in your results
-        c.moveToFirst();
-
-        while (!c.isAfterLast()) {
-            if (c.getString(c.getColumnIndex("stopNumber")) != null) {
-                dbString += "Texting: " + c.getString(c.getColumnIndex("stopNumber")) + " " + c.getString(c.getColumnIndex("busNumber")) +
-                        " between " + c.getString(c.getColumnIndex("beginPeriod")) + " o'clock & " + c.getString(c.getColumnIndex("endPeriod")) + " o'clock";
-                dbString += "\n";
-            }
-            c.moveToNext();
-        }
-        db.close();
-        return dbString;
-    }
+//    public String databaseToString() {
+//        String dbString = "";
+//        SQLiteDatabase db = getReadableDatabase();
+//        String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1";
+//
+//        //Cursor point to a location in your results
+//        Cursor c = db.rawQuery(query, null);
+//        //Move to the first row in your results
+//        c.moveToFirst();
+//
+//        while (!c.isAfterLast()) {
+//            if (c.getString(c.getColumnIndex("stopNumber")) != null) {
+//                dbString += "Texting: " + c.getString(c.getColumnIndex("stopNumber")) + " " + c.getString(c.getColumnIndex("busNumber")) +
+//                        " between " + c.getString(c.getColumnIndex("beginPeriod")) + " o'clock & " + c.getString(c.getColumnIndex("endPeriod")) + " o'clock";
+//                dbString += "\n";
+//            }
+//            c.moveToNext();
+//        }
+//        db.close();
+//        return dbString;
+//    }
 
     //Returns a copy of the database as an arraylist
     public ArrayList<Entry> databaseToArrayList() {
         ArrayList<Entry> entries = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1" + " ORDER BY " + COLUMN_BEGINPERIOD + " ASC, " + COLUMN_ENDPERIOD + " ASC";
+        String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1" + " ORDER BY " + COLUMN_BEGINPERIOD + " ASC, " + COLUMN_ENDPERIOD + " ASC, "
+                + COLUMN_BUSNAME + " ASC";
 
         //Cursor point to a location in your results
         Cursor c = db.rawQuery(query, null);
@@ -102,8 +103,8 @@ public class DBHandler extends SQLiteOpenHelper{
 
         while (!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex("stopNumber")) != null) {
-                Entry entry = new Entry(c.getString(c.getColumnIndex("stopNumber")), c.getString(c.getColumnIndex("busNumber")),
-                        c.getString(c.getColumnIndex("beginPeriod")), c.getString(c.getColumnIndex("endPeriod")), c.getString(c.getColumnIndex("busName")));
+                Entry entry = new Entry(c.getInt(c.getColumnIndex("stopNumber")), c.getInt(c.getColumnIndex("busNumber")),
+                        c.getInt(c.getColumnIndex("beginPeriod")), c.getInt(c.getColumnIndex("endPeriod")), c.getString(c.getColumnIndex("busName")));
                 entries.add(entry);
             }
             c.moveToNext();
@@ -117,7 +118,8 @@ public class DBHandler extends SQLiteOpenHelper{
     public ArrayList<String> busStopToText(int time){
         ArrayList<String> bus_stops = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1";
+        String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1" + " ORDER BY " + COLUMN_BEGINPERIOD + " ASC, " + COLUMN_ENDPERIOD + " ASC, "
+                + COLUMN_BUSNAME + " ASC";
 
         //Cursor point to a location in your results
         Cursor c = db.rawQuery(query, null);
@@ -125,11 +127,13 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         while (!c.isAfterLast()) {
-            if (c.getString(c.getColumnIndex("stopNumber")) != null) {
+            String stopNumber = c.getString(c.getColumnIndex("stopNumber"));
+            if (stopNumber != null) {
                 int beginPeriod = c.getInt(c.getColumnIndex("beginPeriod"));
                 int endPeriod = c.getInt(c.getColumnIndex("endPeriod"));
-                if((time > beginPeriod && time < endPeriod) || (endPeriod < beginPeriod && time > beginPeriod) || (endPeriod < beginPeriod && time < endPeriod)){
-                    bus_stops.add(c.getString(c.getColumnIndex("stopNumber")) + " " + c.getString(c.getColumnIndex("busNumber")));
+                if((time >= beginPeriod && time < endPeriod) || (endPeriod < beginPeriod && time >= beginPeriod) || (endPeriod < beginPeriod && time < endPeriod)){
+                    String busNumber = c.getString(c.getColumnIndex("busNumber"));
+                    bus_stops.add(stopNumber + " " + busNumber);
                 }
             }
             c.moveToNext();

@@ -76,13 +76,15 @@ public class MainActivity extends AppCompatActivity {
         String beginPeriod = beginPeriodInput.getText().toString();
         String endPeriod = endPeriodInput.getText().toString();
         String busName = busNameInput.getText().toString();
-        if(!stopNumber.equals("") && !busNumber.equals("") && !beginPeriod.equals("") && !endPeriod.equals("")
-                && Integer.parseInt(beginPeriod) >= 0 && Integer.parseInt(endPeriod) <= 24) {
-
-            Entry entry = new Entry(stopNumber, busNumber, beginPeriod, endPeriod, busName);
-            myEntryArray = dbHandler.addEntry(entry);
-            updateArrayAdapter();
-            clearUserInputs();
+        if(!stopNumber.isEmpty() && !busNumber.isEmpty() && !beginPeriod.isEmpty() && !endPeriod.isEmpty()) {
+            int beginPeriod_int = Integer.parseInt(beginPeriod);
+            int endPeriod_int = Integer.parseInt(endPeriod);
+            if(beginPeriod_int >= 0 && beginPeriod_int <= 24 && endPeriod_int >= 0 && endPeriod_int <= 24) {
+                Entry entry = new Entry(Integer.parseInt(stopNumber), Integer.parseInt(busNumber), beginPeriod_int, endPeriod_int, busName);
+                myEntryArray = dbHandler.addEntry(entry);
+                updateArrayAdapter();
+                clearUserInputs();
+            }
         }
     }
 

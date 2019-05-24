@@ -3,13 +3,13 @@ package io.github.richardyjtian.bustexter;
 public class Entry {
 
     private int _id;
-    private String stopNumber;
-    private String busNumber;
-    private String beginPeriod;
-    private String endPeriod;
+    private int stopNumber;
+    private int busNumber;
+    private int beginPeriod;
+    private int endPeriod;
     private String busName;
 
-    public Entry(String stopNumber, String busNumber, String beginPeriod, String endPeriod, String busName) {
+    public Entry(int stopNumber, int busNumber, int beginPeriod, int endPeriod, String busName) {
         this.stopNumber = stopNumber;
         this.busNumber = busNumber;
         this.beginPeriod = beginPeriod;
@@ -25,39 +25,43 @@ public class Entry {
         this._id = _id;
     }
 
-    public String getStopNumber() {
+    public int getStopNumber() {
         return stopNumber;
     }
 
-    public void setStopNumber(String stopNumber) {
+    public void setStopNumber(int stopNumber) {
         this.stopNumber = stopNumber;
     }
 
-    public String getBusNumber() {
+    public int getBusNumber() {
         return busNumber;
     }
 
-    public void setBusNumber(String busNumber) {
+    public void setBusNumber(int busNumber) {
         this.busNumber = busNumber;
     }
 
-    public String getBeginPeriod() {
+    public int getBeginPeriod() {
         return beginPeriod;
     }
 
-    public void setBeginPeriod(String beginPeriod) {
+    public void setBeginPeriod(int beginPeriod) {
         this.beginPeriod = beginPeriod;
     }
 
-    public String getEndPeriod() {
+    public int getEndPeriod() {
         return endPeriod;
     }
 
-    public void setEndPeriod(String endPeriod) {
+    public void setEndPeriod(int endPeriod) {
         this.endPeriod = endPeriod;
     }
 
-    public String getBusName() { return busName; }
+    public String getBusName() {
+        return busName;
+    }
 
-    public void setBusName(String busName) { this.busName = busName; }
+    public void setBusName(String busName) {
+        this.busName = busName;
+    }
 }
