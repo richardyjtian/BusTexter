@@ -1,14 +1,19 @@
 package io.github.richardyjtian.bustexter;
 
+import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 import android.content.Context;
 import android.content.ContentValues;
+import android.widget.Toast;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class DBHandler extends SQLiteOpenHelper{
 
-    private static final int DATABASE_VERSION = 1; //change version if add other descriptors to entry class
+    private static final int DATABASE_VERSION = 2; //change version if add other descriptors to entry class
     private static final String DATABASE_NAME = "entries.db";
     private static final String TABLE_ENTRIES = "entries";
     private static final String COLUMN_ID = "_id";
@@ -16,6 +21,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String COLUMN_BUSNUMBER = "busNumber";
     private static final String COLUMN_BEGINPERIOD = "beginPeriod";
     private static final String COLUMN_ENDPERIOD = "endPeriod";
+    private static final String COLUMN_BUSNAME = "busName";
 
     public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -28,7 +34,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_STOPNUMBER + " TEXT" + ", " +
                 COLUMN_BUSNUMBER + " TEXT" + ", " +
                 COLUMN_BEGINPERIOD + " TEXT" + ", " +
-                COLUMN_ENDPERIOD + " TEXT" +
+                COLUMN_ENDPERIOD + " TEXT" + ", " +
+                COLUMN_BUSNAME + " TEXT" +
                 ");";
         db.execSQL(query);
     }
@@ -40,15 +47,17 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //Add a new row to the database
-    public void addEntry(Entry entry){
+    public ArrayList<Entry> addEntry(Entry entry){
         ContentValues values = new ContentValues();
         values.put(COLUMN_STOPNUMBER, entry.getStopNumber());
         values.put(COLUMN_BUSNUMBER, entry.getBusNumber());
         values.put(COLUMN_BEGINPERIOD, entry.getBeginPeriod());
         values.put(COLUMN_ENDPERIOD, entry.getEndPeriod());
+        values.put(COLUMN_BUSNAME, entry.getBusName());
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_ENTRIES, null, values);
         db.close();
+        return databaseToArrayList();
     }
 
     //Delete an entry from the database
@@ -80,8 +89,33 @@ public class DBHandler extends SQLiteOpenHelper{
         return dbString;
     }
 
-    //Returns the bus stop to text at a given time
-    public String busStopToText(int time){
+    //Returns a copy of the database as an arraylist
+    public ArrayList<Entry> databaseToArrayList() {
+        ArrayList<Entry> entries = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1" + " ORDER BY " + COLUMN_BEGINPERIOD + " ASC, " + COLUMN_ENDPERIOD + " ASC";
+
+        //Cursor point to a location in your results
+        Cursor c = db.rawQuery(query, null);
+        //Move to the first row in your results
+        c.moveToFirst();
+
+        while (!c.isAfterLast()) {
+            if (c.getString(c.getColumnIndex("stopNumber")) != null) {
+                Entry entry = new Entry(c.getString(c.getColumnIndex("stopNumber")), c.getString(c.getColumnIndex("busNumber")),
+                        c.getString(c.getColumnIndex("beginPeriod")), c.getString(c.getColumnIndex("endPeriod")), c.getString(c.getColumnIndex("busName")));
+                entries.add(entry);
+            }
+            c.moveToNext();
+        }
+        db.close();
+        return entries;
+    }
+
+
+    //Returns bus stops to text at a given time
+    public ArrayList<String> busStopToText(int time){
+        ArrayList<String> bus_stops = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_ENTRIES + " WHERE 1";
 
@@ -94,14 +128,14 @@ public class DBHandler extends SQLiteOpenHelper{
             if (c.getString(c.getColumnIndex("stopNumber")) != null) {
                 int beginPeriod = c.getInt(c.getColumnIndex("beginPeriod"));
                 int endPeriod = c.getInt(c.getColumnIndex("endPeriod"));
-                if(time > beginPeriod && time < endPeriod){
-                    return c.getString(c.getColumnIndex("stopNumber")) + " " + c.getString(c.getColumnIndex("busNumber"));
+                if((time > beginPeriod && time < endPeriod) || (endPeriod < beginPeriod && time > beginPeriod) || (endPeriod < beginPeriod && time < endPeriod)){
+                    bus_stops.add(c.getString(c.getColumnIndex("stopNumber")) + " " + c.getString(c.getColumnIndex("busNumber")));
                 }
             }
             c.moveToNext();
         }
         db.close();
-        return null;
+        return bus_stops;
     }
 
 }

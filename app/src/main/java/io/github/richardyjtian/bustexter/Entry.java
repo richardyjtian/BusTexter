@@ -7,12 +7,14 @@ public class Entry {
     private String busNumber;
     private String beginPeriod;
     private String endPeriod;
+    private String busName;
 
-    public Entry(String stopNumber, String busNumber, String beginPeriod, String endPeriod) {
+    public Entry(String stopNumber, String busNumber, String beginPeriod, String endPeriod, String busName) {
         this.stopNumber = stopNumber;
         this.busNumber = busNumber;
         this.beginPeriod = beginPeriod;
         this.endPeriod = endPeriod;
+        this.busName = busName;
     }
 
     public int get_id() {
@@ -54,4 +56,8 @@ public class Entry {
     public void setEndPeriod(String endPeriod) {
         this.endPeriod = endPeriod;
     }
+
+    public String getBusName() { return busName; }
+
+    public void setBusName(String busName) { this.busName = busName; }
 }
