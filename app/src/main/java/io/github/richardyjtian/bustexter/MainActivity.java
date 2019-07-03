@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     // dynamic array of entries (populate at run time)
     public ArrayList<Entry> myEntryArray = new ArrayList<>();
 
-    //todo: organize array by start time (if same start time, earlier end time comes first)
     //todo: location based text
 
     @Override
