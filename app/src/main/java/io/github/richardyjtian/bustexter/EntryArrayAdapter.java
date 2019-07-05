@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -36,21 +37,42 @@ public class EntryArrayAdapter extends ArrayAdapter<Entry> {
         final int pos = position;
         final Entry entry = theEntryArray.get(position);
 
+        final int stopNumber = entry.getStopNumber();
+        final int busNumber = entry.getBusNumber();
+        final int beginPeriod = entry.getBeginPeriod();
+        final int endPeriod = entry.getEndPeriod();
+
         // Set text
         TextView bus_to_text = row.findViewById(R.id.bus_to_text);
         String busName = entry.getBusName();
-        if(!busName.isEmpty())
-            bus_to_text.setText("Texting: " + entry.getStopNumber() + " " + entry.getBusNumber() + "\n               " + entry.getBusName()
-                + "\nBetween: " + entry.getBeginPeriod() + ":00 and " + entry.getEndPeriod() + ":00");
-        else
-            bus_to_text.setText("Texting: " + entry.getStopNumber() + " " + entry.getBusNumber()
-                + "\nBetween: " + entry.getBeginPeriod() + ":00 and " + entry.getEndPeriod() + ":00");
+        String address = entry.getAddress();
+        String text;
+
+        if(!busName.isEmpty() && !address.isEmpty()) {
+            text = "Texting: " + stopNumber + " " + busNumber +
+                    "\nTo: " + busName +
+                    "\nBetween: " + beginPeriod + ":00 and " + endPeriod + ":00" +
+                    "\nNear: " + address;
+        } else if(!busName.isEmpty()) {
+            text = "Texting: " + stopNumber + " " + busNumber +
+                    "\nTo: " + busName +
+                    "\nBetween: " + beginPeriod + ":00 and " + endPeriod + ":00";
+        } else if(!address.isEmpty()) {
+            text = "Texting: " + stopNumber + " " + busNumber +
+                    "\nBetween: " + beginPeriod + ":00 and " + endPeriod + ":00" +
+                    "\nNear: " + address;
+        } else {
+            text = "Texting: " + stopNumber + " " + busNumber +
+                    "\nBetween: " + beginPeriod + ":00 and " + endPeriod + ":00";
+        }
+        bus_to_text.setText(text);
+
 
         // Set text now button on click
         Button text_now = row.findViewById(R.id.text_now);
         text_now.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                SMS.sendSMS("33333", entry.getStopNumber() + " " + entry.getBusNumber());
+                MySMS.sendSMS("33333", stopNumber + " " + busNumber);
             }
         });
 
@@ -58,7 +80,7 @@ public class EntryArrayAdapter extends ArrayAdapter<Entry> {
         ImageView delete = row.findViewById(R.id.bin);
         delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                MainActivity.dbHandler.deleteEntry(entry.getStopNumber());
+                MainActivity.dbHandler.deleteEntry(stopNumber);
                 theEntryArray.remove(pos);
                 notifyDataSetChanged();
             }
