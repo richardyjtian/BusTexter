@@ -6,9 +6,9 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Geocoder;
 import android.location.Location;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
-
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -64,14 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Don't care about location
         if (!locationOptionSwitch.isChecked()) {
-            MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour));
+            MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour), this);
             return;
         }
 
         // Geocoder isn't present so location won't work
         if (!Geocoder.isPresent()) {
             Toast.makeText(this, "Geocoder isn't present, so location won't work", Toast.LENGTH_SHORT).show();
-            MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour));
+            MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour), this);
             return;
         }
 
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         // No Location permission so just send according to time
         if (!MyLocation.LocationPermissionGranted(this)) {
             MyLocation.requestLocationPermission(this);
-            MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour));
+            MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour), this);
             return;
         }
 
@@ -89,15 +88,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Location location) {
                 if (location != null)
-                    MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour, location));
+                    MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour, location), MainActivity.this);
                 else
-                    MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour));
+                    MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour), MainActivity.this);
             }
         });
         client.getLastLocation().addOnFailureListener(this, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour));
+                MySMS.sendMultipleSMS(dbHandler.busStopsToText(hour), MainActivity.this);
             }
         });
     }

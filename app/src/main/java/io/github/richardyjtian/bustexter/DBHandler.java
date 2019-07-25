@@ -141,7 +141,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     // Returns bus stops to text at a given time and location if the distance is within 1000m
-    private final float distanceThreshold = 1000; // distance in meters
+    private final float distanceThreshold = 1500; // distance in meters
     public ArrayList<String> busStopsToText(int time, Location currLocation){
         ArrayList<String> bus_stops = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();

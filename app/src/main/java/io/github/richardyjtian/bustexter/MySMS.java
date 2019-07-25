@@ -3,8 +3,8 @@ package io.github.richardyjtian.bustexter;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.telephony.SmsManager;
 import android.widget.Toast;
 
@@ -37,9 +37,24 @@ public class MySMS {
         sms.sendTextMessage(phoneNumber, null, message, null, null);
     }
 
-    public static void sendMultipleSMS(ArrayList<String> busStopsToText) {
-        for(int i = 0; i < busStopsToText.size(); i++) {
-            sendSMS("33333", busStopsToText.get(i));
+    public static void sendMultipleSMS(ArrayList<String> busStopsToText, Activity activity) {
+        if(busStopsToText.isEmpty()) {
+            Toast.makeText(activity, "No stops were texted", Toast.LENGTH_LONG).show();
+        }
+        else {
+            StringBuilder listString = new StringBuilder("Bus stop(s) texted: ");
+
+            String firstBusStop = busStopsToText.get(0);
+            listString.append(firstBusStop);
+            sendSMS("33333", firstBusStop);
+
+            for(int i = 1; i < busStopsToText.size(); i++) {
+                String busStop = busStopsToText.get(i);
+                sendSMS("33333", busStop);
+                listString.append(", ");
+                listString.append(busStop);
+            }
+            Toast.makeText(activity, listString, Toast.LENGTH_LONG).show();
         }
     }
 }

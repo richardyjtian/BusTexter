@@ -72,7 +72,9 @@ public class EntryArrayAdapter extends ArrayAdapter<Entry> {
         Button text_now = row.findViewById(R.id.text_now);
         text_now.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                MySMS.sendSMS("33333", stopNumber + " " + busNumber);
+                String busStop = stopNumber + " " + busNumber;
+                MySMS.sendSMS("33333", busStop);
+                Toast.makeText(context, "Bus stop texted: " + busStop, Toast.LENGTH_LONG).show();
             }
         });
 
