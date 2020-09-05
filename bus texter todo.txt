@@ -1,0 +1,4 @@
+
+2. edit entries
+4. minute precision (not hour) and day of week precision
+5. run in background
